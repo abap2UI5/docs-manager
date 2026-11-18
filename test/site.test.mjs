@@ -8,7 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const DIST = path.join(import.meta.dirname, "..", "dist");
-const BASE = "/why/";
+const BASE = "/docs-manager/";
 const html = fs.readFileSync(path.join(DIST, "index.html"), "utf8");
 
 test("the eight section ids are the addresses the redirect and the README link to", () => {
@@ -53,8 +53,8 @@ test("the community page is built, carries no script, and both pages link each o
   assert.match(about, /id="support"/);
   assert.match(about, /id="community"/);
   assert.match(about, /id="idea"/);
-  assert.match(html, /href="\/why\/community\/"/, "home links to community");
-  assert.match(about, /href="\/why\/#who-runs-it"/, "community links back home");
+  assert.match(html, /href="\/docs-manager\/community\/"/, "home links to community");
+  assert.match(about, /href="\/docs-manager\/#who-runs-it"/, "community links back home");
   for (const ref of [...about.matchAll(/\s(?:src|href)="([^"#]+)"/g)].map((m) => m[1]).filter((u) => u.startsWith("/"))) {
     const file = path.join(DIST, ref.slice(BASE.length) || "index.html");
     const target = fs.existsSync(file) && fs.statSync(file).isDirectory() ? path.join(file, "index.html") : file;
@@ -67,12 +67,12 @@ test("the FAQ page is built, carries no script, and the home page points at it",
   assert.equal([...faq.matchAll(/<script\b/gi)].length, 0, "no <script> on the FAQ page");
   assert.ok((faq.match(/<details/g) || []).length >= 12, "the questions are on the FAQ page");
   assert.doesNotMatch(html, /class="faq"/, "no question list on the home page");
-  assert.match(html, /href="\/why\/faq\/"/, "home links to the FAQ");
+  assert.match(html, /href="\/docs-manager\/faq\/"/, "home links to the FAQ");
   assert.doesNotMatch(faq, /evaluat|problem/i);
 });
 
 test("the canonical address is the published one", () => {
-  assert.match(html, /<link rel="canonical" href="https:\/\/abap2ui5\.github\.io\/why\/">/);
+  assert.match(html, /<link rel="canonical" href="https:\/\/abap2ui5\.github\.io\/docs-manager\/">/);
 });
 
 const visible = html.replace(/<head>[\s\S]*?<\/head>/, "").replace(/<[^>]+>/g, " ");
@@ -139,7 +139,7 @@ test("the release the page names is the newest release of the framework", async 
   try {
     const token = process.env.GITHUB_TOKEN;
     const res = await fetch("https://api.github.com/repos/abap2UI5/abap2UI5/releases/latest", {
-      headers: { accept: "application/vnd.github+json", "user-agent": "abap2ui5-why-site-test", ...(token ? { authorization: `Bearer ${token}` } : {}) },
+      headers: { accept: "application/vnd.github+json", "user-agent": "abap2ui5-docs-manager-site-test", ...(token ? { authorization: `Bearer ${token}` } : {}) },
       signal: AbortSignal.timeout(15000),
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -155,12 +155,12 @@ test("the release the page names is the newest release of the framework", async 
 test("the search feed: every section and every question, at an address that exists", () => {
   const feed = JSON.parse(fs.readFileSync(path.join(DIST, "search.json"), "utf8"));
   assert.equal(feed.site, "Why abap2UI5");
-  assert.equal(feed.url, "https://abap2ui5.github.io/why/");
+  assert.equal(feed.url, "https://abap2ui5.github.io/docs-manager/");
   assert.ok(feed.entries.length >= 20, `${feed.entries.length} entries`);
   for (const e of feed.entries) {
     assert.ok(e.title, "a title");
-    assert.match(e.url, /^https:\/\/abap2ui5\.github\.io\/why\//);
-    const [page, id] = e.url.replace("https://abap2ui5.github.io/why/", "").split("#");
+    assert.match(e.url, /^https:\/\/abap2ui5\.github\.io\/docs-manager\//);
+    const [page, id] = e.url.replace("https://abap2ui5.github.io/docs-manager/", "").split("#");
     const html = fs.readFileSync(path.join(DIST, page, "index.html"), "utf8");
     if (id) assert.match(html, new RegExp(`id="${id}"`), e.url);
   }

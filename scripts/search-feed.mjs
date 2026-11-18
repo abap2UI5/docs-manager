@@ -15,7 +15,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const DIST = path.join(import.meta.dirname, "..", "dist");
-const ROOT = "https://abap2ui5.github.io/why/";
+const ROOT = "https://abap2ui5.github.io/docs-manager/";
 
 const decode = (s) =>
   s.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;|&#x27;/g, "'").replace(/&nbsp;/g, " ");

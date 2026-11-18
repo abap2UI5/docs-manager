@@ -1,5 +1,5 @@
 # Build, test and publish the page to GitHub Pages at
-# https://abap2ui5.github.io/why/.
+# https://abap2ui5.github.io/docs-manager/.
 #
 # On a pull request it builds and tests only. On main it also deploys.
 #

@@ -3,9 +3,13 @@
 abap2UI5 for decision makers: one static page that presents abap2UI5 to IT
 management and product owners - what it can build, who runs it, where it is
 the shorter path to a UI5 app on SAP and where it is not, what it costs -
-published at https://abap2ui5.github.io/why/ by GitHub Pages. A
+published at https://abap2ui5.github.io/docs-manager/ by GitHub Pages. A
 standalone site — its own repository, build and deployment — and nothing in
-it depends on abap2UI5/docs or abap2UI5/playground at build time.
+it depends on abap2UI5/docs or abap2UI5/browser-playground at build time.
+The repository was abap2UI5/why, then abap2UI5/test-docs, and the site was
+at `/why/` until 2026-11-17; the base path is now `/docs-manager/`
+(`astro.config.mjs`), and the font URL, the sitemap, the search feed and the
+tests use it.
 
 ## Layout
 
@@ -26,7 +30,7 @@ it depends on abap2UI5/docs or abap2UI5/playground at build time.
 
 ```bash
 npm ci
-npm run dev      # dev server, http://localhost:4321/why/
+npm run dev      # dev server, http://localhost:4321/docs-manager/
 npm run build    # dist/
 npm test         # the tests, against dist/ - build first
 npm run check    # build + test, what CI runs
