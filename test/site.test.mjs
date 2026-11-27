@@ -168,3 +168,19 @@ test("the search feed: every section and every question, at an address that exis
     assert.ok(feed.entries.some((e) => e.url.endsWith(`#${id}`)), `#${id} is findable`);
   }
 });
+
+test("every question of the FAQ is an address, and the search sends a hit to it", () => {
+  const faq = fs.readFileSync(path.join(DIST, "faq", "index.html"), "utf8");
+  const details = [...faq.matchAll(/<details\b([^>]*)>/g)].map((m) => m[1].match(/\sid="([^"]+)"/)?.[1]);
+  assert.ok(details.length >= 12);
+  assert.ok(details.every(Boolean), "a question without an id");
+  assert.equal(new Set(details).size, details.length, "two questions with one id");
+  const feed = JSON.parse(fs.readFileSync(path.join(DIST, "search.json"), "utf8"));
+  const hits = feed.entries.filter((e) => e.url.includes("/faq/"));
+  assert.equal(hits.length, details.length, "one entry per question");
+  for (const e of hits) assert.match(e.url, /\/faq\/#[a-z0-9-]+$/, `${e.title}: a hit on the bare FAQ page`);
+  assert.deepEqual(hits.map((e) => e.url.split("#")[1]), details);
+  // a targeted question shows its answer without a script
+  const css = [...faq.matchAll(/<link rel="stylesheet" href="\/docs-manager\/([^"]+)"/g)].map((m) => fs.readFileSync(path.join(DIST, m[1]), "utf8")).join("");
+  assert.match(css, /details:target:not\(\[open\]\)::details-content\{[^}]*content-visibility:visible/);
+});

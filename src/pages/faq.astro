@@ -52,6 +52,22 @@ const faq = [
     ["Our users are fast in SAP GUI. Will they accept it?", "A screen slower than the transaction it replaces is one users leave. An abap2UI5 screen makes one request per click on the same ABAP stack, so a keyboard-driven worklist stays as quick as it was. And nothing is replaced in one go: one screen at a time, the GUI stays until the last one, the logic behind both is the same code."],
   ]],
 ];
+
+/* Every question is an address: the id of its <details> is the slug of the
+ * question, so the family's search (scripts/search-feed.mjs) sends a hit to
+ * faq/#that-question, and a :target rule in global.css shows its answer -
+ * without a script, which the policy does not allow. Reword a question and
+ * its address moves with it; two questions with one slug, or a question with
+ * the slug of a group, would be one address for two things and fail the build. */
+const qid = (q: string) => slug(q.replace(/<[^>]+>/g, " "));
+{
+  const seen = new Set(faq.map(([group]) => slug(group as string)));
+  for (const [, qs] of faq) for (const [q] of qs as string[][]) {
+    const id = qid(q);
+    if (!id || seen.has(id)) throw new Error(`faq.astro: the question "${q}" has the address #${id}, which is taken or empty`);
+    seen.add(id);
+  }
+}
 ---
 <Page
   current="faq"
@@ -73,7 +89,7 @@ const faq = [
         {faq.map(([group, qs], g) => (
           <div class="faq-group" id={slug(group as string)}>
             <h3>{group}</h3>
-            {qs.map(([q, a], i) => <details open={g === 0 && i === 0}><summary>{q}</summary><p set:html={a} /></details>)}
+            {qs.map(([q, a], i) => <details id={qid(q)} open={g === 0 && i === 0}><summary>{q}</summary><p set:html={a} /></details>)}
           </div>
         ))}
       </div>
