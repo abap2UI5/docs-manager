@@ -336,6 +336,13 @@ code { font-family: var(--mono); font-size: .9em; }
 .faq summary::after { content: "+"; flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--bg-alt); color: var(--brand); font-weight: 700; }
 .faq details[open] summary::after { content: "−"; }
 .faq details > p { margin: 0; padding: 0 48px 24px 4px; max-width: 820px; color: var(--muted); }
+/* a question opened by its address (faq/#its-slug, where the family's search
+ * sends a hit): no script may set `open`, so the targeted question shows its
+ * answer by itself and is marked. ::details-content is the slot a closed
+ * <details> hides - a browser without it scrolls to the question, closed. */
+.faq details:target > summary { color: var(--brand); }
+.faq details:target:not([open])::details-content { display: block; content-visibility: visible; }
+.faq details:target:not([open]) summary::after { content: "−"; }
 
 /* who runs it: the companies and the references */
 .logos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 36px 0 0; padding: 0; list-style: none; }

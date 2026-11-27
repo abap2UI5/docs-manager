@@ -22,8 +22,9 @@ tests use it.
 | `src/components/` | `Stats` (the headline tiles under the hero), `Icon` (inline marks) |
 | `src/styles/global.css` | The one stylesheet; light and dark follow the system |
 | `public/` | Font (Inter, self-hosted), logo, icons, `apps/` (one screenshot per example app; the hero shows one of them) |
-| `scripts/search-feed.mjs` | Runs after `astro build` and writes `dist/search.json`: one entry per section with an id and per FAQ question, read from the built pages. abap2UI5/docs fetches it at build time into the family's one search index (the home page and the playground read it); the shape `{ site, url, entries: [{ title, text, headings, terms, url }] }` is the same on every site of the family. A page that yields nothing fails the build |
+| `scripts/search-feed.mjs` | Runs after `astro build` and writes `dist/search.json`: one entry per section with an id and per FAQ question (at `faq/#<question id>`), read from the built pages; entities are decoded with `&amp;` last and numeric ones by number (`test/search-feed.test.mjs`). abap2UI5/docs fetches it at build time into the family's one search index (the home page and the playground read it); the shape `{ site, url, entries: [{ title, text, headings, terms, url }] }` is the same on every site of the family. A page that yields nothing fails the build |
 | `test/site.test.mjs` | `node:test` over the built `dist/index.html` |
+| `test/search-feed.test.mjs` | `node:test` over the feed's reader (`decode`, `questions`), no build needed |
 | `.github/workflows/pages.yml` | Build + test on every PR; deploy on main |
 
 ## Commands
@@ -38,6 +39,12 @@ npm run check    # build + test, what CI runs
 
 ## Rules
 
+- **Every FAQ question is an address.** Its `<details>` carries the slug of
+  the question as its id (`qid( )` in `src/pages/faq.astro`; a duplicate, or
+  one equal to a group's id, fails the build), the search feed sends a hit to
+  `faq/#that-id`, and `details:target` in `global.css` shows the answer - no
+  script (`::details-content`; a browser without it scrolls to the question,
+  closed). Rewording a question moves its address.
 - **The eight section ids are addresses.** `/docs/evaluate` redirects here
   with its `#fragment`, and the framework's README links `#what-you-keep` and
   `#when-to-use-it-and-when-not`. Reword a heading freely; keep the `id`.
